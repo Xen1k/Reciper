@@ -1,10 +1,12 @@
 from flask import Flask, request
 from telebot import telebot, types
 from telebot.apihelper import ApiTelegramException
+from stableDiffApiRequester import convert_txt_to_img_url
+from supportFun import get_image_from_url
 import time
+from privateConfig import *
 
-BOT_TOKEN = ''
-URL = 'https://1af3-95-24-223-21.ngrok-free.app'
+URL = 'https://c898-95-24-224-203.ngrok-free.app'
 
 INGREDIENTS_LIST_REQ_CAPTION = 'Введите список используемых продуктов'
 
@@ -22,7 +24,9 @@ def perform_ai_requests(message):
     # убрать надписи-обращения (ex: "Конечно! Вот мой предложенный рецепт...") запросом к gpt
     # обработка запроса для генерации изобрадения
     # запрос к api генерации изображения
-    bot.send_message(message.chat.id, "Результат генерации...", reply_markup=None)
+    generated_image = get_image_from_url(convert_txt_to_img_url(user_caption))
+
+    bot.send_photo(message.chat.id, photo=generated_image, caption=user_caption)
     bot.send_message(message.chat.id, INGREDIENTS_LIST_REQ_CAPTION)
     bot.register_next_step_handler(message, get_ingredients_from_user_message)
 
